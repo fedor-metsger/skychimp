@@ -1,0 +1,37 @@
+
+{% extends "mailing/base.html" %}
+
+{% load static %}
+
+{% block title %}Клиенты{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {% for c in object_list %}
+            <div class="col-lg-12 col-sm-12 portfolio-item">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            <p">{{ c.name }}</p>
+                        </h4>
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <p class="card-text"><b>e-mail:</b> {{ c.email }}</p>
+                                    <form action="/client/{{ c.id }}">
+                                        <input class="btn btn-primary" type="submit" value="Перейти"/>
+                                    </form>
+                                </td>
+                                <td style="width:70%">
+                                    <p class="card-text"><b>Комментарий:</b><br>{{ с.description }}</p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

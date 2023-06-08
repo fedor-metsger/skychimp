@@ -1,0 +1,39 @@
+
+{% extends "mailing/base.html" %}
+
+{% load static %}
+
+{% block title %}Рассылки{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {% for m in object_list %}
+            <div class="col-lg-12 col-sm-12 portfolio-item">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            <p ">{{ m.title }}</p>
+                        </h4>
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <p class="card-text"><b>Периодичность:</b> {{ m.get_period_display }}</p>
+                                    <p class="card-text"><b>Статус:</b> {{ m.get_status_display }}</p>
+                                    <form action="/task/{{ m.id }}">
+                                        <input class="btn btn-primary" type="submit" value="Перейти"/>
+                                    </form>
+                                </td>
+                                <td style="width:70%">
+                                    <p class="card-text"><b>Тема:</b> {{ m.subject }}</p>
+                                    <p class="card-text"><b>Текст:</b><br>{{ m.body }}</p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
