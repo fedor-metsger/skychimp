@@ -10,29 +10,31 @@
             <div class="card h-100">
                 <div class="card-body">
                     <h4 class="card-title">
-{#                        <a href="/task/{{ object.id }}">{{ object.title }}</a>#}
                         <p>{{ object.title }}</p>
                     </h4>
-{#                    <table class="table">#}
-{#                        <tbody>#}
-{#                        <tr>#}
-{#                            <td>#}
-                                <p class="card-text"><b>Периодичность:</b> {{ object.get_period_display }}</p>
-                                <p class="card-text"><b>Статус:</b> {{ object.get_status_display }}</p>
-{#                            </td>#}
-{#                            <td style="width:70%">#}
-                                <p class="card-text"><b>Тема:</b> {{ object.subject }}</p>
-                                <p class="card-text"><b>Текст:</b><br>{{ object.body }}</p>
-                                <form action="update/">
-                                    <input class="btn btn-primary" type="submit" value="Редактировать"/>
-                                </form>
-                                <form action="delete/">
-                                    <input class="btn btn-secondary" type="submit" value="Удалить"/>
-                                </form>
-{#                            </td>#}
-{#                        </tr>#}
-{#                        </tbody>#}
-{#                    </table>#}
+                    {{ form.as_p }}
+                    <p class="card-text"><b>Периодичность:</b> {{ object.get_period_display }}</p>
+                    <p class="card-text"><b>Статус:</b> {{ object.get_status_display }}</p>
+                    <p class="card-text"><b>Тема:</b> {{ object.subject }}</p>
+                    <p class="card-text"><b>Текст:</b><br>{{ object.body }}</p>
+                    <p class="card-text"><b>Интервалы рассылки:</b>
+                        {#                        <a href="{% url 'task' object.id %}" class="btn btn-primary">Добавить</a><br>#}
+                    </p>
+                    {% for ti in object.intervals.all %}
+                        <p>{{ ti.start }} - {{ ti.end }}
+                            {#                            <a href="{% url 'task' object.id %}" class="btn btn-secondary">Редактировать</a>#}
+                            {#                            <a href="{% url 'task' object.id %}" class="btn btn-dark">Удалить</a>#}
+                        </p>
+                    {% endfor %}
+                    <form action="update/">
+                        <input class="btn btn-warning" type="submit" value="Редактировать рассылку"/>
+                    </form>
+                    <form action="delete/">
+                        <input class="btn btn-danger" type="submit" value="Удалить рассылку"/>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'task_list' %}" class="btn btn-primary"><< Назад</a>
                 </div>
             </div>
         </div>

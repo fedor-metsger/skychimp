@@ -17,22 +17,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from mailing.views import TaskDetailView, TaskListView, TaskUpdateView, TaskDeleteView
-from mailing.views import ClientListView, ClientDetailView, ClientDeleteView, ClientUpdateView
+from mailing.views import TaskDetailView, TaskListView, TaskUpdateView, TaskDeleteView, TaskCreateView
+from mailing.views import ClientListView, ClientDetailView, ClientDeleteView, ClientUpdateView, ClientCreateView
 
 # app_name = 'catalog'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-]
 
-urlpatterns = [
-    path('', TaskListView.as_view(), name='tasks'),
+    path('', TaskListView.as_view(), name='task_list'),
     path('task/<int:pk>/', TaskDetailView.as_view(), name='task'),
-    path('task/<int:pk>/update/', TaskUpdateView.as_view(), name='task'),
-    path('task/<int:pk>/delete/', TaskDeleteView.as_view(), name='task'),
-    path('client/', ClientListView.as_view(), name='clients'),
+    path('task/create/', TaskCreateView.as_view(), name='task_create'),
+    path('task/<int:pk>/update/', TaskUpdateView.as_view(), name='task_update'),
+    path('task/<int:pk>/delete/', TaskDeleteView.as_view(), name='task_delete'),
+    path('client/', ClientListView.as_view(), name='client_list'),
     path('client/<int:pk>/', ClientDetailView.as_view(), name='client'),
-    path('client/<int:pk>/update/', ClientUpdateView.as_view(), name='client'),
-    path('client/<int:pk>/delete/', ClientDeleteView.as_view(), name='client')
+    path('client/create/', ClientCreateView.as_view(), name='client_create'),
+    path('client/<int:pk>/update/', ClientUpdateView.as_view(), name='client_update'),
+    path('client/<int:pk>/delete/', ClientDeleteView.as_view(), name='client_delete')
 ]

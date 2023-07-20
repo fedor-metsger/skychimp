@@ -63,13 +63,13 @@ class Task(models.Model):
         verbose_name = 'задание'
         verbose_name_plural = 'задания'
 
-class TimeWindow(models.Model):
-    task = models.ForeignKey(Task, verbose_name="задание", on_delete=models.CASCADE)
-    start = models.TextField(verbose_name="начало интервала")
+class Interval(models.Model):
+    task = models.ForeignKey(Task, verbose_name="задание", on_delete=models.CASCADE, related_name="intervals")
+    start = models.TimeField(verbose_name="начало интервала")
     end = models.TimeField(verbose_name="конец интервала")
 
     def __str__(self):
-        return f'TimeWindow({self.start} - {self.end})'
+        return f'Interval({self.start} - {self.end})'
 
     class Meta:
         verbose_name = 'интервал'
@@ -77,7 +77,7 @@ class TimeWindow(models.Model):
 
 class Client(models.Model):
     name = models.CharField(max_length=100, verbose_name="ФИО")
-    email = models .EmailField(verbose_name="e-mail")
+    email = models.EmailField(verbose_name="e-mail")
     description = models.TextField(verbose_name='комментарий')
     tasks = models.ManyToManyField(Task, verbose_name="назначение")
 

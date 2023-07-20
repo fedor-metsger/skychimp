@@ -15,11 +15,14 @@
                     <p class="card-text"><b>email:</b> {{ object.email }}</p>
                     <p class="card-text"><b>Комментарий:</b> {{ object.description }}</p>
                     <form action="update/">
-                        <input class="btn btn-primary" type="submit" value="Редактировать"/>
+                        <input class="btn btn-warning" type="submit" value="Редактировать"/>
                     </form>
                     <form action="delete/">
-                        <input class="btn btn-secondary" type="submit" value="Удалить"/>
+                        <input class="btn btn-danger" type="submit" value="Удалить"/>
                     </form>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'client_list' %}" class="btn btn-primary"><< Назад</a>
                 </div>
             </div>
         </div>
