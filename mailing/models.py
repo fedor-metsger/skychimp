@@ -50,6 +50,7 @@ class Task(models.Model):
         max_length=8,
         choices=STATUS_CHOICES,
         default=CREATED,
+        verbose_name="статус"
     )
     # status = models.ForeignKey(Status, on_delete=models.CASCADE, verbose_name="статус")
     subject = models.CharField(max_length=100, verbose_name="тема")
@@ -79,10 +80,10 @@ class Client(models.Model):
     name = models.CharField(max_length=100, verbose_name="ФИО")
     email = models.EmailField(verbose_name="e-mail")
     description = models.TextField(verbose_name='комментарий')
-    tasks = models.ManyToManyField(Task, verbose_name="назначение")
+    tasks = models.ManyToManyField(Task, verbose_name="рассылки", related_name="clients")
 
     def __str__(self):
-        return f'Client({self.name})'
+        return f'{self.name}'
 
     class Meta:
         verbose_name = 'клиент'
@@ -92,8 +93,18 @@ class Client(models.Model):
 class Log(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="клиент")
     task = models.ForeignKey(Task, on_delete=models.CASCADE, verbose_name="задание")
-    time = models.DateTimeField(verbose_name="время")
-    status = models.IntegerField(verbose_name="статус")
+    time = models.DateTimeField(auto_now_add=True, verbose_name="время")
+    SUCCESS = "success"
+    UNSUCCESS = "unsuccess"
+    STATUS_CHOICES = [
+        (SUCCESS, "удачно"),
+        (UNSUCCESS, "неудачно")
+    ]
+    status = models.CharField(
+        max_length=9,
+        choices=STATUS_CHOICES,
+        verbose_name="статус"
+    )
     response = models.TextField(verbose_name="ответ сервера")
 
     def __str__(self):
