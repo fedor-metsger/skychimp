@@ -4,7 +4,9 @@ from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.core.mail import send_mail
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, ListView
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.shortcuts import redirect
 
 from users.forms import UserRegisterForm, UserActivationForm
 from users.models import User
@@ -81,6 +83,11 @@ class UserUpdateView(UpdateView):
     fields = ("email", "phone", "telegram", "country")
     success_url = reverse_lazy("index")
 
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data["not_manager"] = not "manager" in [i.name for i in self.request.user.groups.all()]
+        return context_data
+
 class UserPasswordView(UpdateView):
     model = User
     fields = ()
@@ -99,3 +106,25 @@ class UserPasswordView(UpdateView):
             recipient_list=[self.object.email]
         )
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data["not_manager"] = "manager" not in [i.name for i in self.request.user.groups.all()]
+        return context_data
+
+class UserListView(UserPassesTestMixin, ListView):
+    model = User
+    fields = ("email", "phone")
+    extra_context = {
+        'title': 'Пользователи'
+    }
+
+    def test_func(self):
+        return self.request.user.is_authenticated and "manager" in [i.name for i in self.request.user.groups.all()]
+
+def switch_user(request, pk):
+    user = User.objects.get(pk=pk)
+    if request.user.is_authenticated and "manager" in [i.name for i in request.user.groups.all()]:
+        user.is_active = not user.is_active
+    user.save()
+    return redirect(f'/user/')

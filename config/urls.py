@@ -18,7 +18,8 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 
-from mailing.views import TaskDetailView, TaskListView, TaskUpdateView, TaskDeleteView, TaskCreateView
+from mailing.views import TaskDetailView, TaskListView, TaskUpdateView, TaskDeleteView, TaskCreateView, index_view
+from mailing.views import switch_task
 from mailing.views import ClientListView, ClientDetailView, ClientDeleteView, ClientUpdateView, ClientCreateView
 
 # app_name = 'catalog'
@@ -26,12 +27,13 @@ from mailing.views import ClientListView, ClientDetailView, ClientDeleteView, Cl
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('', TaskListView.as_view(), name='index'),
+    path('', index_view, name='index'),
     path('task/', TaskListView.as_view(), name='task_list'),
     path('task/<int:pk>/', TaskDetailView.as_view(), name='task'),
     path('task/create/', TaskCreateView.as_view(), name='task_create'),
     path('task/<int:pk>/update/', TaskUpdateView.as_view(), name='task_update'),
     path('task/<int:pk>/delete/', TaskDeleteView.as_view(), name='task_delete'),
+    path('task/<int:pk>/switch/', switch_task, name='task_switch'),
     path('client/', ClientListView.as_view(), name='client_list'),
     path('client/<int:pk>/', ClientDetailView.as_view(), name='client'),
     path('client/create/', ClientCreateView.as_view(), name='client_create'),

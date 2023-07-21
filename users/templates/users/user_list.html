@@ -1,0 +1,54 @@
+{% extends "mailing/base.html" %}
+
+{% load static %}
+
+{% block title %}Пользователи{% endblock %}
+
+{% block content %}
+    <div class="card-header">
+        <h3>Пользователи</h3>
+    </div>
+
+    <div class="row">
+        {% for u in object_list %}
+            <div class="col-lg-12 col-sm-12 portfolio-item">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            <p> {{ u.email }}
+                            <a href="{% url 'user:switch' u.pk %}" class="btn btn-primary">
+                                {% if u.is_active %}
+                                Заблокировать
+                                {% else %}
+                                Разблокировать
+                                {% endif %}
+                            </a>
+                            </p>
+                        </h4>
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <p class="card-text"><b>Телефон:</b> {{ u.phone }}</p>
+                                    <p class="card-text"><b>Телеграм:</b> {{ u.telegram }}</p>
+                                    <p class="card-text"><b>Страна:</b> {{ u.country }}</p>
+                                </td>
+                                <td>
+                                    <p class="card-text"><b>Активный (is_active):</b> {{ u.is_active }}</p>
+                                    <p class="card-text"><b>Суперпользователь:</b> {{ u.is_superuser }}</p>
+                                    <p class="card-text"><b>Сотрудник:</b> {{ u.is_stuff }}</p>
+                                </td>
+                                <td>
+                                    <p class="card-text"><b>Дата создания:</b> {{ u.date_joined }}</p>
+                                    <p class="card-text"><b>Активирован:</b> {{ u.activated }}</p>
+                                    <p class="card-text"><b>Последний логин:</b> {{ u.last_login }}</p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

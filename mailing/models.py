@@ -1,6 +1,9 @@
 
 from django.db import models
 
+from users.models import User
+
+
 # Create your models here.
 # class Period(models.Model):
 #     slug = models.CharField(max_length=20, verbose_name="slug")
@@ -24,6 +27,7 @@ from django.db import models
 
 class Task(models.Model):
     title = models.CharField(max_length=100, verbose_name="название")
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     DAILY = "daily"
     WEEKLY = "weekly"
     MONTHLY = "monthly"
@@ -80,6 +84,7 @@ class Client(models.Model):
     name = models.CharField(max_length=100, verbose_name="ФИО")
     email = models.EmailField(verbose_name="e-mail")
     description = models.TextField(verbose_name='комментарий')
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     tasks = models.ManyToManyField(Task, verbose_name="рассылки", related_name="clients")
 
     def __str__(self):

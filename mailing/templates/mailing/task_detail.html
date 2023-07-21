@@ -14,7 +14,8 @@
                     </h4>
                     {{ form.as_p }}
                     <p class="card-text"><b>Периодичность:</b> {{ object.get_period_display }}</p>
-                    <p class="card-text"><b>Статус:</b> {{ object.get_status_display }}</p>
+                    <p class="card-text"><b>Статус:</b> {{ object.get_status_display }}
+                        <a href="{% url 'task_switch' object.pk %}" class="btn btn-primary">{{ button_text }}</a></p>
                     <p class="card-text"><b>Тема:</b> {{ object.subject }}</p>
                     <p class="card-text"><b>Текст:</b><br>{{ object.body }}</p>
                     <p class="card-text"><b>Интервалы рассылки:</b>
@@ -26,12 +27,14 @@
                             {#                            <a href="{% url 'task' object.id %}" class="btn btn-dark">Удалить</a>#}
                         </p>
                     {% endfor %}
-                    <form action="update/">
-                        <input class="btn btn-warning" type="submit" value="Редактировать рассылку"/>
-                    </form>
-                    <form action="delete/">
-                        <input class="btn btn-danger" type="submit" value="Удалить рассылку"/>
-                    </form>
+                    {% if not_manager %}
+                        <form action="update/">
+                            <input class="btn btn-warning" type="submit" value="Редактировать рассылку"/>
+                        </form>
+                        <form action="delete/">
+                            <input class="btn btn-danger" type="submit" value="Удалить рассылку"/>
+                        </form>
+                    {% endif %}
                 </div>
                 <div class="card-footer">
                     <a href="{% url 'task_list' %}" class="btn btn-primary"><< Назад</a>
