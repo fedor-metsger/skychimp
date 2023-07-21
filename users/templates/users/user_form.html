@@ -1,0 +1,29 @@
+{% extends "mailing/base.html" %}
+
+{% load static %}
+
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block content %}
+    <div class="card-header">
+        <h3>Редактирование профиля</h3>
+    </div>
+
+    <div class=" album py-5 bg-light">
+        <div class="container">
+            <a href="{% url "index" %}" class="btn btn-primary">На главную страницу</a>
+            <br><br>
+            <form method="post" class="row" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card mb-4 box-shadow">
+
+                    <div class="card-body">
+                        {{ form.as_p }}
+                    </div>
+                    <button class="btn btn-lg btn-warning btn-block" type="submit">Сохранить</button>
+                    <a href="{% url "user:password" object.id %}" class="btn btn-danger">Сгенерировать новый пароль</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

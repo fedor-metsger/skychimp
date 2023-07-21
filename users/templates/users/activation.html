@@ -1,0 +1,25 @@
+{% extends "mailing/base.html" %}
+
+{% load static %}
+
+{% block title %}Активация{% endblock %}
+
+{% block content %}
+    <div class="card-header">
+        <h3>Активация</h3>
+    </div>
+
+    <div class=" album py-5 bg-light">
+        <div class="container">
+            <form method="post" class="row">
+                {% csrf_token %}
+                <div class="card mb-4 box-shadow">
+                    <div class="card-body">
+                        {{ form.as_p }}
+                    </div>
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Активировать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

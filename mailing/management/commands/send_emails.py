@@ -65,7 +65,7 @@ class Command(BaseCommand):
             Exists(
                 Interval.objects.filter(start__lte=now_time, end__gte=now_time, task_id=OuterRef('pk'))
             )
-        ).prefetch_related('clients')
+        ).filter(status=Task.RUNNING).prefetch_related('clients')
 
         for t in tasks:
             print(t)
@@ -73,9 +73,9 @@ class Command(BaseCommand):
                 print("\t" + str(c))
                 last_successful_log = self.get_last_successful_log(t, c)
                 if not last_successful_log or self.need_send(t, last_successful_log):
-                    print("\tУдачной рассылки в данном интервале не было, запускаем")
+                    print("\tУдачной рассылки в данном периоде не было, запускаем")
                     success = self.send_email(t, c)
                     self.log_result_to_db(t, c, success)
                 else:
-                    print("\tРассылка в данном интервале состоялась, пропуск")
+                    print("\tРассылка в данном периоде состоялась, пропуск")
 
