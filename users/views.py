@@ -122,6 +122,9 @@ class UserListView(UserPassesTestMixin, ListView):
     def test_func(self):
         return self.request.user.is_authenticated and "manager" in [i.name for i in self.request.user.groups.all()]
 
+    def get_queryset(self):
+        return super().get_queryset().order_by('pk')
+
 def switch_user(request, pk):
     user = User.objects.get(pk=pk)
     if request.user.is_authenticated and "manager" in [i.name for i in request.user.groups.all()]:
