@@ -9,8 +9,9 @@ class ArticleDetailView(DetailView):
     model = Article
     fields = "__all__"
 
-    def get_context_data(request, *args, **kwargs):
+    def get_context_data(self, *args, **kwargs):
         context = super().get_context_data()
         get_cached_articles(context["object"].pk).update(views=context["object"].views + 1)
         context["object"].views += 1
+        context["not_manager"] = "manager" not in [i.name for i in self.request.user.groups.all()]
         return context

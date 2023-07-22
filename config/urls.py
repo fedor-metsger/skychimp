@@ -19,7 +19,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 from mailing.crontab import EmailManager
-from mailing.views import TaskDetailView, TaskListView, TaskUpdateView, TaskDeleteView, TaskCreateView, index_view
+from mailing.views import TaskDetailView, TaskListView, TaskUpdateView, TaskDeleteView, TaskCreateView, index_view, \
+    tasks_report
 from mailing.views import switch_task
 from mailing.views import ClientListView, ClientDetailView, ClientDeleteView, ClientUpdateView, ClientCreateView
 
@@ -29,6 +30,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('', index_view, name='index'),
+    path('report/', tasks_report, name='report'),
     path('task/', TaskListView.as_view(), name='task_list'),
     path('task/<int:pk>/', TaskDetailView.as_view(), name='task'),
     path('task/create/', TaskCreateView.as_view(), name='task_create'),
@@ -45,6 +47,5 @@ urlpatterns = [
     path('crontab/', EmailManager.switch_crontab, name='switch_crontab'),
 
     path('user/', include('users.urls', namespace='user')),
-
     path('blog/', include('blog.urls', namespace='blog'))
 ]

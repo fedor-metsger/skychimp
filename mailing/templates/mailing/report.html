@@ -1,0 +1,38 @@
+{% extends "mailing/base.html" %}
+
+{% load static %}
+
+{% block title %}Отчёт по проведённым рассылкам{% endblock %}
+
+{% block content %}
+    <div class="card-header">
+        <h3>Отчёт по проведённым рассылкам</h3>
+        <br>
+        <table width="100%">
+            <tbody>
+            <td width="33%">Рассылка</td>
+            <td width="33%">Клиент</td>
+            <td width="33%">Время последнего запуска</td>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 portfolio-item">
+            <div class="card h-100">
+                <div class="card-body">
+                    <table width="100%">
+                        <tbody>
+                        {% for t in tasks %}
+                            <tr>
+                                <td width="33%"><a href="/task/{{ t.task }}/">{{ t.task_title }}</a></td>
+                                <td width="33%"><a href="/client/{{ t.client }}/">{{ t.client_name }}</a></td>
+                                <td width="33%">{{ t.last_run }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

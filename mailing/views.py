@@ -4,12 +4,14 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView
 from django.forms import inlineformset_factory
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.decorators.cache import cache_page
+from django.db.models import Max
+from django.core.exceptions import PermissionDenied
 
 from blog.models import Article
 from mailing.crontab import EmailManager
-from mailing.models import Client, Task, Interval
+from mailing.models import Client, Task, Interval, Log
 from mailing.forms import TaskForm, IntervalForm, ClientForm
+
 
 # Create your views here.
 class ClientListView(UserPassesTestMixin, ListView):
@@ -35,12 +37,14 @@ class ClientDetailView(UserPassesTestMixin, DetailView):
 
     def test_func(self):
         obj = self.get_object()
-        return self.request.user.is_authenticated and obj.owner_id == self.request.user.id
+        return self.request.user.is_authenticated and (obj.owner_id == self.request.user.id or
+                                                       self.request.user.is_superuser)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         context_data["not_manager"] = "manager" not in [i.name for i in self.request.user.groups.all()]
         return context_data
+
 
 class ClientCreateView(UserPassesTestMixin, CreateView):
     model = Client
@@ -68,6 +72,7 @@ class ClientCreateView(UserPassesTestMixin, CreateView):
         context_data["not_manager"] = "manager" not in [i.name for i in self.request.user.groups.all()]
         return context_data
 
+
 class ClientUpdateView(UserPassesTestMixin, UpdateView):
     model = Client
     form_class = ClientForm
@@ -75,7 +80,8 @@ class ClientUpdateView(UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         obj = self.get_object()
-        return self.request.user.is_authenticated and obj.owner_id == self.request.user.id
+        return self.request.user.is_authenticated and (obj.owner_id == self.request.user.id or
+                                                       self.request.user.is_superuser)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -88,18 +94,21 @@ class ClientUpdateView(UserPassesTestMixin, UpdateView):
         context_data["not_manager"] = "manager" not in [i.name for i in self.request.user.groups.all()]
         return context_data
 
+
 class ClientDeleteView(UserPassesTestMixin, DeleteView):
     model = Client
     success_url = reverse_lazy("client_list")
 
     def test_func(self):
         obj = self.get_object()
-        return self.request.user.is_authenticated and obj.owner_id == self.request.user.id
+        return self.request.user.is_authenticated and (obj.owner_id == self.request.user.id or
+                                                       self.request.user.is_superuser)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         context_data["not_manager"] = "manager" not in [i.name for i in self.request.user.groups.all()]
         return context_data
+
 
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
@@ -117,6 +126,7 @@ class TaskListView(LoginRequiredMixin, ListView):
         context_data["not_manager"] = "manager" not in [i.name for i in self.request.user.groups.all()]
         return context_data
 
+
 class TaskDetailView(UserPassesTestMixin, DetailView):
     model = Task
 
@@ -124,7 +134,8 @@ class TaskDetailView(UserPassesTestMixin, DetailView):
         obj = self.get_object()
         return self.request.user.is_authenticated and (
                 obj.owner_id == self.request.user.id or
-                "manager" in [i.name for i in self.request.user.groups.all()])
+                "manager" in [i.name for i in self.request.user.groups.all()] or
+                self.request.user.is_superuser)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -136,6 +147,7 @@ class TaskDetailView(UserPassesTestMixin, DetailView):
             context_data["button_text"] = "Запустить"
 
         return context_data
+
 
 class TaskCreateView(UserPassesTestMixin, CreateView):
     model = Task
@@ -166,6 +178,7 @@ class TaskCreateView(UserPassesTestMixin, CreateView):
             self.object.save()
         return super().form_valid(form)
 
+
 class TaskUpdateView(UserPassesTestMixin, UpdateView):
     model = Task
     fields = ["title", "period", "status", "subject", "body"]
@@ -173,7 +186,8 @@ class TaskUpdateView(UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         obj = self.get_object()
-        return self.request.user.is_authenticated and obj.owner_id == self.request.user.id
+        return self.request.user.is_authenticated and (obj.owner_id == self.request.user.id or
+                                                       self.request.user.is_superuser)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -193,18 +207,21 @@ class TaskUpdateView(UserPassesTestMixin, UpdateView):
             formset.save()
         return super().form_valid(form)
 
+
 class TaskDeleteView(UserPassesTestMixin, DeleteView):
     model = Task
     success_url = reverse_lazy("task_list")
 
     def test_func(self):
         obj = self.get_object()
-        return self.request.user.is_authenticated and obj.owner_id == self.request.user.id
+        return self.request.user.is_authenticated and (obj.owner_id == self.request.user.id or
+                                                       self.request.user.is_superuser)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         context_data["not_manager"] = "manager" not in [i.name for i in self.request.user.groups.all()]
         return context_data
+
 
 # @cache_page(3)
 def index_view(request):
@@ -223,14 +240,35 @@ def index_view(request):
     }
     return render(request, "mailing/index.html", context=context)
 
+
 def switch_task(request, pk):
     task = Task.objects.get(pk=pk)
     if request.user.is_authenticated and (
             task.owner_id == request.user.id or
-            "manager" in [i.name for i in request.user.groups.all()]):
+            "manager" in [i.name for i in request.user.groups.all()] or
+            request.user.is_superuser):
         if task.status == Task.RUNNING:
             task.status = Task.FINISHED
         else:
             task.status = Task.RUNNING
         task.save()
     return redirect(f'/task/{pk}/')
+
+
+def tasks_report(request):
+    if not (request.user.is_authenticated and request.user.is_superuser):
+        raise PermissionDenied()
+
+    tasks = Log.objects.values("task", "client").annotate(
+        last_run=Max("time")
+    ).order_by("task", "client")
+
+    for t in tasks:
+        t["task_title"] = Task.objects.get(pk=t["task"])
+        t["client_name"] = Client.objects.get(pk=t["client"])
+
+    context = {
+        "not_manager": "manager" not in [i.name for i in request.user.groups.all()],
+        "tasks": tasks
+    }
+    return render(request, "mailing/report.html", context=context)
