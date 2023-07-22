@@ -3,9 +3,10 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView
 from django.forms import inlineformset_factory
-from django.core.exceptions import ValidationError
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.decorators.cache import cache_page
 
+from blog.models import Article
 from mailing.models import Client, Task, Interval
 from mailing.forms import TaskForm, IntervalForm, ClientForm
 
@@ -204,8 +205,19 @@ class TaskDeleteView(UserPassesTestMixin, DeleteView):
         context_data["not_manager"] = "manager" not in [i.name for i in self.request.user.groups.all()]
         return context_data
 
+@cache_page(3)
 def index_view(request):
-    context = {"not_manager": "manager" not in [i.name for i in request.user.groups.all()]}
+    tasks = Task.objects.count()
+    active = Task.objects.filter(status=Task.RUNNING).count()
+    clients = Client.objects.count()
+    articles = Article.objects.order_by('?')[0:3]
+    context = {
+        "not_manager": "manager" not in [i.name for i in request.user.groups.all()],
+        "tasks": tasks,
+        "active": active,
+        "clients": clients,
+        "articles": articles
+    }
     return render(request, "mailing/index.html", context=context)
 
 def switch_task(request, pk):

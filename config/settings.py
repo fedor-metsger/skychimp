@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     "rolepermissions",
 
+    "blog",
     "mailing",
     "users"
 ]
@@ -150,3 +151,12 @@ EMAIL_HOST_PASSWORD = "AsTSNVv7pun9"
 EMAIL_USE_SSL = True
 
 ROLEPERMISSIONS_MODULE = 'config.roles'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://:eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81@127.0.0.1:6379'
+    }
+}
+
+LOW_CACHED = 'True'

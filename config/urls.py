@@ -40,5 +40,7 @@ urlpatterns = [
     path('client/<int:pk>/update/', ClientUpdateView.as_view(), name='client_update'),
     path('client/<int:pk>/delete/', ClientDeleteView.as_view(), name='client_delete'),
 
-    path('user/', include('users.urls', namespace='user'))
+    path('user/', include('users.urls', namespace='user')),
+
+    path('blog/', include('blog.urls', namespace='blog'))
 ]

@@ -1,0 +1,23 @@
+{% extends "mailing/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+    <div class="card-header">
+        <h3>{{ object.title }}</h3>
+        <table width="100%">
+            <tbody>
+            <tr>
+                <td><p> Дата публикации: {{ object.published }} </p></td>
+                <td><p style="text-align:right;"> {{ object.views }} просмотров</p></td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div class="card-body">
+        <p>{{ object.content }}</p>
+    </div>
+{% endblock %}

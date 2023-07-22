@@ -3,28 +3,6 @@ from django.db import models
 
 from users.models import User
 
-
-# Create your models here.
-# class Period(models.Model):
-#     slug = models.CharField(max_length=20, verbose_name="slug")
-#     description = models.CharField(max_length=20, verbose_name="описание")
-#
-#     def __str__(self):
-#         return f'{self.description}'
-#
-#     class Meta:
-#         verbose_name = "периодичность"
-#
-# class Status(models.Model):
-#     slug = models.CharField(max_length=20, verbose_name="slug")
-#     description = models.CharField(max_length=20, verbose_name="описание")
-#
-#     def __str__(self):
-#         return f'{self.description}'
-#
-#     class Meta:
-#         verbose_name = "статус"
-
 class Task(models.Model):
     title = models.CharField(max_length=100, verbose_name="название")
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)

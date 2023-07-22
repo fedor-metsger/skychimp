@@ -2,3 +2,4 @@ Django
 Pillow
 psycopg2
 django-role-permissions
+redis
