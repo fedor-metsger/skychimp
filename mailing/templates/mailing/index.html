@@ -1,6 +1,7 @@
 {% extends "mailing/base.html" %}
 
 {% load static %}
+{% load cache %}
 
 {% block title %}Сервис рассылок{% endblock %}
 
@@ -22,10 +23,17 @@
                     <p class="card-text"><b>Всего клиентов:</b> {{ clients }}</p>
                 </td>
             </tr>
+            {% if user.is_superuser %}
+            <tr>
+                <td><a href="/send/" class="btn btn-warning">Запустить однократную рассылку</a></td>
+                <td><p style="text-align:right;">Crontab:{{ crontab_status }}</p></td>
+                <td><p style="text-align:left;"><a href="/crontab/" class="btn btn-danger">Переключить</a></p></td>
+            </tr>
+            {% endif %}
             </tbody>
         </table>
     </div>
-
+    {% cache 3 mainpage %}
     <div class="row">
         {% for a in articles %}
             <div class="col-lg-12 col-sm-12 portfolio-item">
@@ -48,4 +56,5 @@
             </div>
         {% endfor %}
     </div>
+    {% endcache %}
 {% endblock %}

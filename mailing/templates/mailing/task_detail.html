@@ -22,10 +22,7 @@
                         {#                        <a href="{% url 'task' object.id %}" class="btn btn-primary">Добавить</a><br>#}
                     </p>
                     {% for ti in object.intervals.all %}
-                        <p>{{ ti.start }} - {{ ti.end }}
-                            {#                            <a href="{% url 'task' object.id %}" class="btn btn-secondary">Редактировать</a>#}
-                            {#                            <a href="{% url 'task' object.id %}" class="btn btn-dark">Удалить</a>#}
-                        </p>
+                        <p>{{ ti.start }} - {{ ti.end }}</p>
                     {% endfor %}
                     {% if not_manager %}
                         <form action="update/">

@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.decorators.cache import cache_page
 
 from blog.models import Article
+from mailing.crontab import EmailManager
 from mailing.models import Client, Task, Interval
 from mailing.forms import TaskForm, IntervalForm, ClientForm
 
@@ -205,18 +206,20 @@ class TaskDeleteView(UserPassesTestMixin, DeleteView):
         context_data["not_manager"] = "manager" not in [i.name for i in self.request.user.groups.all()]
         return context_data
 
-@cache_page(3)
+# @cache_page(3)
 def index_view(request):
     tasks = Task.objects.count()
     active = Task.objects.filter(status=Task.RUNNING).count()
     clients = Client.objects.count()
     articles = Article.objects.order_by('?')[0:3]
+    crontab_status = "Запущен" if EmailManager.crontab_status else "Остановлен"
     context = {
         "not_manager": "manager" not in [i.name for i in request.user.groups.all()],
         "tasks": tasks,
         "active": active,
         "clients": clients,
-        "articles": articles
+        "articles": articles,
+        "crontab_status": crontab_status
     }
     return render(request, "mailing/index.html", context=context)
 
