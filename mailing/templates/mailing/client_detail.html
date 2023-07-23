@@ -5,13 +5,13 @@
 {% block title %}object.name{% endblock %}
 
 {% block content %}
+    <div class="card-header">
+        <h3>{{ object.name }}</h3>
+    </div>
     <div class="row">
         <div class="col-lg-12 col-sm-12 portfolio-item">
             <div class="card h-100">
                 <div class="card-body">
-                    <h4 class="card-title">
-                        <p>{{ object.name }}</p>
-                    </h4>
                     <p class="card-text"><b>email:</b> {{ object.email }}</p>
                     <p class="card-text"><b>Комментарий:</b> {{ object.description }}</p>
                     <form action="update/">
@@ -22,7 +22,7 @@
                     </form>
                 </div>
                 <div class="card-footer">
-                    <a href="{% url 'client_list' %}" class="btn btn-primary"><< Назад</a>
+                    {#                    <a href="{% url 'client_list' %}" class="btn btn-primary"><< Назад</a>#}
                 </div>
             </div>
         </div>

@@ -8,7 +8,7 @@ from django.db.models import Max
 from django.core.exceptions import PermissionDenied
 
 from blog.models import Article
-from mailing.crontab import EmailManager
+from crontab.manager import EmailManager
 from mailing.models import Client, Task, Interval, Log
 from mailing.forms import TaskForm, IntervalForm, ClientForm
 

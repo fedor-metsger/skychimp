@@ -1,11 +1,14 @@
 
 from datetime import datetime
+import os
 
 from django.shortcuts import redirect
 from django.core.exceptions import PermissionDenied
 from django.db.models import Exists, OuterRef
 
 from mailing.models import Task, Client, Interval, Log
+
+LOG_FILE_NAME = "/tmp/mailing.log"
 
 class EmailManager():
     crontab_status = False
@@ -20,7 +23,6 @@ class EmailManager():
                                       task=t,
                                       status=Log.SUCCESS).latest('time')
         except Exception as e:
-            print(e)
             return None
 
     @staticmethod
@@ -64,10 +66,12 @@ class EmailManager():
         l = Log(client=c, task=t, status=s, response="")
         l.save()
 
-    @staticmethod
-    def run_sending():
+def run():
+
+    with open(LOG_FILE_NAME, "a") as logfile:
 
         now_time = datetime.utcnow().time()
+        logfile.write(f'-------------------------------\nStarting at {now_time}\n')
         tasks = Task.objects.filter(
             Exists(
                 Interval.objects.filter(start__lte=now_time, end__gte=now_time, task_id=OuterRef('pk'))
@@ -75,29 +79,30 @@ class EmailManager():
         ).filter(status=Task.RUNNING).prefetch_related('clients')
 
         for t in tasks:
-            print(t)
+            logfile.write(str(t) + '\n')
             for c in t.clients.all():
-                print("\t" + str(c))
+                logfile.write("\t" + str(c) + '\n')
                 last_successful_log = EmailManager.get_last_successful_log(t, c)
                 if not last_successful_log or EmailManager.need_send(t, last_successful_log):
-                    print("\tУдачной рассылки в данном периоде не было, запускаем")
+                    logfile.write(f'Удачной рассылки в данном периоде не было, запускаем\n')
                     success = EmailManager.send_single_email(t, c)
                     EmailManager.log_result_to_db(t, c, success)
                 else:
-                    print("\tРассылка в данном периоде состоялась, пропуск")
+                    logfile.write(f'Рассылка в данном периоде состоялась, пропуск\n')
 
-    @staticmethod
-    def send_emails(request):
-        if request.user.is_superuser != True:
-            raise PermissionDenied()
+def send_emails(request):
+    if request.user.is_superuser != True:
+        raise PermissionDenied()
+    run()
+    return redirect('index')
 
-        EmailManager.run_sending()
+def switch_crontab(request):
+    if request.user.is_superuser != True:
+        raise PermissionDenied()
 
-        return redirect('index')
-
-    @staticmethod
-    def switch_crontab(request):
-        if request.user.is_superuser != True:
-            raise PermissionDenied()
-        EmailManager.crontab_status = not EmailManager.crontab_status
-        return redirect('index')
+    if EmailManager.crontab_status:
+        os.system("./manage.py crontab remove")
+    else:
+        os.system("./manage.py crontab add")
+    EmailManager.crontab_status = not EmailManager.crontab_status
+    return redirect('index')

@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 
     "rolepermissions",
 
+    "django_crontab",
+
     "blog",
     "mailing",
     "users"
@@ -160,3 +162,8 @@ CACHES = {
 }
 
 LOW_CACHED = 'True'
+
+CRONJOBS = [
+    ('*/1 * * * *', 'crontab.manager.run')
+]
+CRONTAB_LOCK_JOBS=True

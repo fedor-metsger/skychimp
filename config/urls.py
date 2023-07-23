@@ -18,11 +18,12 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 
-from mailing.crontab import EmailManager
+# from mailing.crontab import EmailManager
 from mailing.views import TaskDetailView, TaskListView, TaskUpdateView, TaskDeleteView, TaskCreateView, index_view, \
     tasks_report
 from mailing.views import switch_task
 from mailing.views import ClientListView, ClientDetailView, ClientDeleteView, ClientUpdateView, ClientCreateView
+from crontab import manager
 
 # app_name = 'catalog'
 
@@ -43,8 +44,8 @@ urlpatterns = [
     path('client/<int:pk>/update/', ClientUpdateView.as_view(), name='client_update'),
     path('client/<int:pk>/delete/', ClientDeleteView.as_view(), name='client_delete'),
 
-    path('send/', EmailManager.send_emails, name='switch_crontab'),
-    path('crontab/', EmailManager.switch_crontab, name='switch_crontab'),
+    path('send/', manager.send_emails, name='switch_crontab'),
+    path('crontab/', manager.switch_crontab, name='switch_crontab'),
 
     path('user/', include('users.urls', namespace='user')),
     path('blog/', include('blog.urls', namespace='blog'))
