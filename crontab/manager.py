@@ -2,8 +2,10 @@
 from datetime import datetime
 import os
 
+from django.conf import settings
 from django.shortcuts import redirect
 from django.core.exceptions import PermissionDenied
+from django.core.mail import send_mail
 from django.db.models import Exists, OuterRef
 
 from mailing.models import Task, Client, Interval, Log
@@ -56,7 +58,15 @@ class EmailManager():
         '''
         Отправляет письмо
         '''
-        return Log.SUCCESS
+        if send_mail(
+            subject=t.subject,
+            message=t.body,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[c.email]
+        ):
+            return Log.SUCCESS
+        else:
+            return Log.UNSUCCESS
 
     @staticmethod
     def log_result_to_db(t:Task, c:Client, s):
